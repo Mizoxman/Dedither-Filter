@@ -1,0 +1,68 @@
+how to read and modify the LUTs:
+
+both LUTs, first column:
+
+with both the average_lut.txt file (used by "3x3 averaged LUT" mode) and the bit_shift_lut.txt file (used by "3x3 bit-shift LUT" mode), the first section behaves identically, consisting of a combination of 8 0s and 1s
+
+these 8 0s and 1s represent which of the 8 pixels adjacent to the pixel being modified are within the user-defined thresholds, they are arranged thusly:
+
+12345678
+
+123
+4 5
+678
+
+the center pixel is skipped, as it is the pixel being tested against and is always guaranteed to be within its own threshold
+
+
+
+average LUT, second column:
+
+this LUT is used in the "3x3 average LUT" mode, it carries information on which pixels are to be averaged together to form the final output color, it consists of 9 0s and 1s, arranged thusly:
+
+123456789
+
+123
+456
+789
+
+in this case, the center pixel is NOT skipped and can be controlled as any other, as, depending on the intention, it may be useful to set up the lut such to exclude the original value of the pixel
+
+the version of the average lut shipping with this program is an experiment in reducing the effects of 2x2 alpha dither, the ".old" version that is also included makes the "3x3 average lut" mode behave identically to the "3x3 average" mode, and is a good starting point for experimenting with new combinations
+
+
+
+bit shift lut, second column:
+
+this LUT is used in the "3x3 bit shift LUT" mode, it carries information on not only which pixels are to be averaged together, but also what weight each pixel should have in the final output
+
+this column consists of numbers (0-4) and dashes, arranged thusly:
+
+123456789
+
+123
+456
+789
+
+each value represents a different weight
+
+-: no weight, doesn't contribute to final output
+0: weight of 1, input value is not bit-shifted
+1: weight of 2, input value is bit-shifted to the left by 1
+2: weight of 4, input value is bit-shifted to the left by 2
+3: weight of 8, input value is bit-shifted to the left by 3
+4: weight of 16, input value is bit-shifted to the left by 4
+
+all weights MUST add up to 16, so you must be careful on how you allocate weights.
+
+some examples of valid weight combinations:
+
+----4----
+
+----3--3-
+
+2--23----
+
+2-2-2-2--
+
+010121010

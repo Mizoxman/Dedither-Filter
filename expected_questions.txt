@@ -1,0 +1,35 @@
+questions you may have:
+
+Q: why is your coding so sloppy and mostly uncommented?
+
+A: I'm rusty, this was a rush job, and mostly just a proof of concept
+
+
+
+Q: why does the 5x5 use no more than 16 values?
+
+A: 2 reasons:
+1: ensures that the accumulators never exceed 12 bits
+2: in my testing, 16 values, especially in this pattern, work better for dedithering 4x4 ordered dither patterns, using the full 25 values actually looks lumpier
+
+
+
+Q: why is the 5x5 sampled in such a strange order?
+
+A: it starts with the 16 samples roughly centered on the center pixel, in a pattern designed for reversing 4x4 ordered dither:
+
+ ■ ■ 
+■■■■ 
+ ■■■■
+■■■■
+  ■ ■
+
+it then fills in the gaps in a star pattern until it either acquires 16 valid values or runs out of samples.
+
+the starting pattern was chosen because it can still properly dedither a 4x4 bayer matrix, while being (mostly) centered on the center pixel. the search continues after that in a star pattern in order to reduce the chance of it being biased in any particular direction
+
+
+
+Q: why do you always add 8 before bit-shifting the values from 12-bits back to 8?
+
+A: bit-shifting to the right is equivalent to dividing by 16 with the rounding mode set to "floor", adding 8 first makes it instead equivalent to having the rounding mode set to "nearest", this reduces error, and also prevents the image from being darkened by an average of 1/2 the LSB
